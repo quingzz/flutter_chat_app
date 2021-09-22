@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_flutter_app/pages/chat_page.dart';
+import 'package:simple_flutter_app/pages/search_user.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -40,6 +41,21 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (BuildContext context, int index) {
             return ChatRoomCard(_chatRooms[index]);
           }),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Create new chat',
+        backgroundColor: Colors.lightBlue.shade200,
+        onPressed: () {
+          showModalBottomSheet<dynamic>(
+              context: context,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              builder: (BuildContext context) {
+                return SearchUser();
+              });
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
@@ -60,7 +76,7 @@ class ChatRoomCard extends StatelessWidget {
 
     return InkWell(
         onTap: enterChat,
-        hoverColor: Colors.blueGrey[100],
+        hoverColor: Colors.blueGrey[300],
         splashColor: Colors.blue.withAlpha(30),
         radius: 200,
         child: Container(
