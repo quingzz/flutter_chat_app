@@ -13,6 +13,17 @@ class _HomePageState extends State<HomePage> {
   final List<String> _chatRooms = ['sample room', 'sample room'];
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,

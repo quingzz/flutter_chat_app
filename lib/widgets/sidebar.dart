@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../authentication/google_signin.dart';
 
 class Sidebar extends StatelessWidget {
   final double _width;
@@ -36,8 +37,10 @@ class Sidebar extends StatelessWidget {
             // container for button
             Container(
               child: ElevatedButton(
-                onPressed: () {},
-                child: Text(
+                onPressed: () {
+                  GoogleAuth.signOut();
+                },
+                child: const Text(
                   'Logout',
                   style: TextStyle(fontSize: 16),
                 ),
