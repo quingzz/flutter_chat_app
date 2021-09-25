@@ -18,7 +18,9 @@ class GoogleAuth {
     final UserCredential userCred =
         await FirebaseAuth.instance.signInWithCredential(credential);
     final User user = userCred.user;
-    // _user = user;
+
+    // Make sure that the user instance is not anonymous
+    assert(!user.isAnonymous);
   }
 
   static Future<void> signOut() async {

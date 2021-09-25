@@ -88,7 +88,7 @@ class _AppState extends State<App> {
             child: Consumer<LoginStatus>(
               builder: (context, loginStatus, child) {
                 if (loginStatus.user != null) {
-                  return SidebarDrawer();
+                  return SidebarDrawer(loginStatus.user);
                 } else {
                   return LoginPage();
                 }

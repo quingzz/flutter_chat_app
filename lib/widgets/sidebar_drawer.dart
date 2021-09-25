@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import '../pages/home_page.dart';
 import '../widgets/sidebar.dart';
@@ -8,7 +10,11 @@ import 'dart:math' as math;
 // Code for accessing sidebar from homepage
 
 class SidebarDrawer extends StatefulWidget {
-  const SidebarDrawer({Key? key}) : super(key: key);
+  User? _currUser;
+
+  SidebarDrawer(User? currUser, {Key? key})
+      : _currUser = currUser,
+        super(key: key);
 
   @override
   _SidebarDrawerState createState() => _SidebarDrawerState();
@@ -81,7 +87,7 @@ class _SidebarDrawerState extends State<SidebarDrawer>
   @override
   Widget build(BuildContext context) {
     const homepage = HomePage();
-    var sidebar = Sidebar(maxRight);
+    var sidebar = Sidebar(widget._currUser, maxRight);
 
     return GestureDetector(
       onHorizontalDragStart: _onDragStart,
