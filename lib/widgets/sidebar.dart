@@ -21,25 +21,9 @@ class Sidebar extends StatelessWidget {
         child: Column(
           children: [
             // container for user avatar
-            Container(
-                padding: const EdgeInsets.only(
-                    top: 80, right: 90, left: 90, bottom: 20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(200),
-                  child: Image(
-                      image: NetworkImage(_currUser!.photoURL.toString()),
-                      fit: BoxFit.contain),
-                )),
+            UserImage(_currUser!.photoURL.toString()),
             // container for username
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-              alignment: Alignment.center,
-              child: Text(
-                _currUser!.displayName,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, color: Colors.white),
-              ),
-            ),
+            UserName(_currUser!.displayName),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10),
             ),
@@ -57,6 +41,44 @@ class Sidebar extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class UserImage extends StatelessWidget {
+  String _imgURL;
+  UserImage(String imgURL, {Key? key})
+      : _imgURL = imgURL,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding:
+            const EdgeInsets.only(top: 80, right: 90, left: 90, bottom: 20),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(200),
+          child: Image(image: NetworkImage(_imgURL), fit: BoxFit.contain),
+        ));
+  }
+}
+
+class UserName extends StatelessWidget {
+  String _username;
+  UserName(String username, {Key? key})
+      : _username = username,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+      alignment: Alignment.center,
+      child: Text(
+        _username,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 22, color: Colors.white),
       ),
     );
   }
