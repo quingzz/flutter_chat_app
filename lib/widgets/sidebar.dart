@@ -65,8 +65,8 @@ class UserImage extends StatelessWidget {
 }
 
 class UserName extends StatelessWidget {
-  String _username;
-  UserName(String username, {Key? key})
+  String? _username;
+  UserName(String? username, {Key? key})
       : _username = username,
         super(key: key);
 
@@ -76,7 +76,7 @@ class UserName extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
       alignment: Alignment.center,
       child: Text(
-        _username,
+        _username!,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 22, color: Colors.white),
       ),
