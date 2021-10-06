@@ -27,12 +27,13 @@ class ChatRoomStream extends ChangeNotifier {
       final allChats = Map<String, dynamic>.from(event.snapshot.value);
 
       // go through each chat room in key:value format and change to ChatRoom obj
-      _listChats = allChats.values.map((roomSnapshot) async {
+      _listChats = allChats.keys.map((roomId) async {
+        var roomSnapshot = allChats[roomId];
         final roomData = Map<String, dynamic>.from(roomSnapshot);
         // Get member data from db
         Map<String, dynamic> memData = await _getMemData(roomData);
 
-        return ChatRoom.fromDB(roomData, chatMember: memData);
+        return ChatRoom.fromDB(roomId, roomData, chatMember: memData);
       }).toList();
 
       notifyListeners();

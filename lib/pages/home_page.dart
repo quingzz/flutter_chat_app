@@ -96,15 +96,16 @@ class _HomePageState extends State<HomePage> {
 
 class ChatRoomCard extends StatelessWidget {
   ChatRoom _room;
-  ChatRoomCard(ChatRoom roomName, {Key? key})
-      : _room = roomName,
+  ChatRoomCard(ChatRoom room, {Key? key})
+      : _room = room,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     void enterChat() {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const ChatPage();
+        // redirect to chatpage with room info
+        return ChatPage(_room);
       }));
     }
 
