@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_flutter_app/pages/chat_page.dart';
 import 'package:simple_flutter_app/pages/search_user.dart';
+import '../streamListeners/chatroom_stream.dart';
+import '../models/chatroom.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -46,12 +49,32 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: ListView.builder(
-          shrinkWrap: true,
-          itemCount: _chatRooms.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ChatRoomCard(_chatRooms[index]);
-          }),
+      // start of listing chat rooms
+      body: ChangeNotifierProvider<ChatRoomStream>(
+        create: (context) => ChatRoomStream(),
+        child: Consumer<ChatRoomStream>(
+          builder: (context, chatStream, child) {
+            if (chatStream.listChats.length > 0) {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: chatStream.listChats.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FutureBuilder<ChatRoom>(
+                        future: chatStream.listChats[index],
+                        builder: (context, AsyncSnapshot<ChatRoom> snapshot) {
+                          if (snapshot.hasData) {
+                            return ChatRoomCard(snapshot.data!);
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        });
+                  });
+            } else {
+              return Text('no chat room');
+            }
+          },
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Create new chat',
         backgroundColor: Colors.lightBlue.shade200,
@@ -72,9 +95,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ChatRoomCard extends StatelessWidget {
-  String _roomName;
-  ChatRoomCard(String roomName, {Key? key})
-      : _roomName = roomName,
+  ChatRoom _room;
+  ChatRoomCard(ChatRoom roomName, {Key? key})
+      : _room = roomName,
         super(key: key);
 
   @override
@@ -101,8 +124,8 @@ class ChatRoomCard extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 20, left: 8),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
-                    child: const Image(
-                        image: AssetImage('lib/assets/room.jpg'),
+                    child: Image(
+                        image: NetworkImage(_room.imgURL),
                         fit: BoxFit.fitHeight),
                   )),
               Column(
@@ -110,14 +133,14 @@ class ChatRoomCard extends StatelessWidget {
                 children: [
                   Text(
                     // room name
-                    _roomName,
+                    _room.roomName,
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    // room name
-                    'latest message',
+                    // latest message
+                    _room.lastMess,
                     textAlign: TextAlign.left,
                     style: const TextStyle(fontSize: 15),
                   )
