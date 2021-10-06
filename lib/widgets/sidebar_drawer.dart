@@ -94,7 +94,6 @@ class _SidebarDrawerState extends State<SidebarDrawer>
       onHorizontalDragUpdate: _onDragUpdate,
       onHorizontalDragEnd: _onDragEnd,
       behavior: HitTestBehavior.translucent,
-      onTap: toggle,
       child: AnimatedBuilder(
         // Animation to display behavior of sidebar during drag
         animation: _animationController,
@@ -103,6 +102,9 @@ class _SidebarDrawerState extends State<SidebarDrawer>
             color: Colors.blueGrey.shade100,
             child: Stack(
               children: [
+                GestureDetector(
+                  onTap: toggle,
+                ),
                 // Transformation for sidebar
                 Transform.translate(
                   offset:
@@ -125,7 +127,7 @@ class _SidebarDrawerState extends State<SidebarDrawer>
                     alignment: Alignment.centerLeft,
                     child: homepage,
                   ),
-                )
+                ),
               ],
             ),
           );
