@@ -102,10 +102,10 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void enterChat() {
-      Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const ChatPage();
-      }));
+      // Navigator.pop(context);
+      // Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //   return ChatPage();
+      // }));
     }
 
     return InkWell(
