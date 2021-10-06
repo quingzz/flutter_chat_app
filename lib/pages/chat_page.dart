@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/message_container.dart';
 import '../widgets/textInputWidget.dart';
+import '../models/chatroom.dart';
+import '../models/message.dart';
+import '../streamListeners/chatmessage_stream.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // Widget used for ChatPage, creating a canvas to add other widgets on
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+  final ChatRoom _room;
+  // chat room info
+  const ChatPage(ChatRoom room, {Key? key})
+      : _room = room,
+        super(key: key);
 
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final List<String> _textList = [
-    "Sample chat text",
-    "Another sample message",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "urhgo eriogewrgoi werogwgj ewrohijrjtph ergjrthpo",
-    "Sample text Sample text Sample text Sample text Sample text Sample text",
-    " Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem."
-  ];
+  final _currUser = FirebaseAuth.instance.currentUser;
+  final ScrollController _scrollController = ScrollController();
 
+  // Funciton to add text
   void setText(String newText) {
-    setState(() {
-      _textList.add(newText);
-    });
+    // setState(() {
+    //   _textList.add(newText);
+    // });
+
+    if (newText.length > 0) {
+      Message newMessage =
+          new Message(widget._room.roomId, newText, _currUser!.uid);
+
+      newMessage.postMessage();
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.fastOutSlowIn);
+    }
   }
 
   @override
@@ -46,43 +56,35 @@ class _ChatPageState extends State<ChatPage> {
           toolbarHeight: 58,
           elevation: 0,
           backgroundColor: Colors.lightBlue.shade50.withOpacity(0.9),
-          title: Row(
-            children: [
-              // container for image
-              Container(
-                  height: 58,
-                  padding: const EdgeInsets.only(bottom: 5, right: 8, left: 30),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(29),
-                    child: const Image(
-                        image: AssetImage('lib/assets/avatar.png'),
-                        fit: BoxFit.contain),
-                  )),
-              // container for chat room name
-              Container(
-                padding: const EdgeInsets.only(left: 30),
-                child: const Text(
-                  "Sample chat",
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          title: ChatInfoBar(widget._room.imgURL, widget._room.roomName),
         ),
         body: Column(
           children: [
             // List of messages
             Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _textList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: MessageContainer(true, _textList[index]));
-                  }),
+              child: ChangeNotifierProvider<ChatMessageStream>(
+                create: (context) => ChatMessageStream(widget._room.roomId),
+                child: Consumer<ChatMessageStream>(
+                  builder: (context, messageStream, child) {
+                    if (messageStream.messageList.length > 0) {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          controller: _scrollController,
+                          itemCount: messageStream.messageList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            var messObj = messageStream.messageList[index];
+                            return Container(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: MessageContainer(
+                                    _currUser!.uid == messObj.sender,
+                                    messObj.messageContent));
+                          });
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
+              ),
             ),
             // Container for text input
             Container(
@@ -97,6 +99,45 @@ class _ChatPageState extends State<ChatPage> {
           ], // pass setText/callback to child widget/ text box
         ),
       ),
+    );
+  }
+}
+
+class ChatInfoBar extends StatelessWidget {
+  final String _imgURL;
+  final String _roomName;
+  const ChatInfoBar(String imgURL, String roomName, {Key? key})
+      : _imgURL = imgURL,
+        _roomName = roomName,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        // container for image
+        Container(
+            height: 58,
+            padding: const EdgeInsets.only(bottom: 5, right: 5, left: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(29),
+              child: Image(image: NetworkImage(_imgURL), fit: BoxFit.contain),
+            )),
+        Expanded(child: Container()),
+        // container for chat room name
+        Container(
+          width: MediaQuery.of(context).size.width * 0.6,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.only(left: 10),
+          child: Text(
+            _roomName,
+            style: const TextStyle(
+              overflow: TextOverflow.fade,
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

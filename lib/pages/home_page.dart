@@ -143,7 +143,8 @@ class ChatRoomCard extends StatelessWidget {
                     // latest message
                     _room.lastMess,
                     textAlign: TextAlign.left,
-                    style: const TextStyle(fontSize: 15),
+                    style: const TextStyle(
+                        fontSize: 15, fontStyle: FontStyle.italic),
                   )
                 ],
               )

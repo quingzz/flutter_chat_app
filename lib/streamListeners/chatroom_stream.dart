@@ -20,7 +20,6 @@ class ChatRoomStream extends ChangeNotifier {
 
   void _listenChatRoomStream() {
     final _chatroomRef = _database.child('chatrooms');
-    final currUser = FirebaseAuth.instance.currentUser;
 
     _chatroomStream = _chatroomRef.onValue.listen((event) {
       // get list of all chatrooms (format id : chatroom obj)
