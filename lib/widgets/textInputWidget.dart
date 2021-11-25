@@ -32,7 +32,16 @@ class _TextInputWidgetState extends State<TextInputWidget> {
 
   void _updateInput(String input) {
     inputController.clear();
-    widget.callback(input);
+
+    // modify input before save it to db
+    String modified_input = input
+        .split(RegExp(r'(?:\r?\n|\r)'))
+        .where((s) => s.trim().isNotEmpty)
+        .join('\n');
+
+    // print(input);
+
+    widget.callback(modified_input);
     FocusScope.of(context).unfocus();
   }
 

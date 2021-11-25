@@ -100,6 +100,8 @@ class ChatRoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String display_mess = _room.lastMess.split("\n")[0];
+
     void enterChat() {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         // redirect to chatpage with room info
@@ -138,12 +140,13 @@ class ChatRoomCard extends StatelessWidget {
                         fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    // latest message
-                    _room.lastMess,
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                        fontSize: 15, fontStyle: FontStyle.italic),
-                  )
+                      // latest message
+                      display_mess,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                          overflow: TextOverflow.ellipsis))
                 ],
               )
             ],
