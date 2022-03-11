@@ -11,6 +11,7 @@ class ChatRoomStream extends ChangeNotifier {
   List<Future<ChatRoom>> _listChats = [];
   late StreamSubscription<Event> _chatroomStream;
 
+// getters to get list of chats
   List<Future<ChatRoom>> get listChats => _listChats;
 
   final _database = FirebaseDatabase.instance.reference();
@@ -25,10 +26,12 @@ class ChatRoomStream extends ChangeNotifier {
       // get list of all chatrooms (format id : chatroom obj)
       final allChats = Map<String, dynamic>.from(event.snapshot.value);
 
-      // go through each chat room in key:value format and change to ChatRoom obj
+      // go through each chatroom in key:value format and convert to ChatRoom obj
       _listChats = allChats.keys.map((roomId) async {
         var roomSnapshot = allChats[roomId];
+
         final roomData = Map<String, dynamic>.from(roomSnapshot);
+
         // Get member data from db
         Map<String, dynamic> memData = await _getMemData(roomData);
 
@@ -47,11 +50,13 @@ class ChatRoomStream extends ChangeNotifier {
     // get the list of id of members
     Map<String, dynamic> chatMemMap =
         Map<String, dynamic>.from(roomData['members']);
+    // get key since roomDatap['members'] return member_id:true => key is id
     List<String> members = List<String>.from(chatMemMap.keys);
 
     // get snapshot of member
     for (int i = 0; i < members.length; i++) {
       if (members[i] != currUser!.uid) {
+        // only get snapshots of member that is not user
         final memid = members[i];
         final memRef =
             FirebaseDatabase.instance.reference().child('user/$memid');

@@ -12,20 +12,26 @@ class ChatMessageStream extends ChangeNotifier {
   late String _roomId;
   late StreamSubscription<Event> _messageStream;
 
+  // Constructor for stream and event listener
   ChatMessageStream(String roomId) {
     _roomId = roomId;
     _listenMessageStream();
   }
 
+  // getter
   List<Message> get messageList => _messageList;
 
   final _databaseRef = FirebaseDatabase.instance.reference();
 
   void _listenMessageStream() {
+    //get database reference for message of current chat room
     final _messageRef =
         _databaseRef.child('messages/$_roomId').orderByChild('timestamp');
+
     _messageStream = _messageRef.onValue.listen((event) {
       final allMessages = Map<String, dynamic>.from(event.snapshot.value);
+
+      // convert data to list of Message objects
       _messageList = allMessages.values
           .map((snapshot) =>
               Message.fromDB(Map<String, dynamic>.from(snapshot), _roomId))
